@@ -6,7 +6,7 @@
  */
 
 // Import the required modules
-const { Events, Collection } = require("discord.js");
+const { Events, Collection, AttachmentBuilder } = require("discord.js");
 const config = require("../../config.json");
 const print = require("../helpers/print");
 
@@ -22,7 +22,47 @@ module.exports = {
   once: false,
 
   // Execute the event asynchronously
-  async execute(message, client) {
+  async execute(message) {
+    if (message.author.bot) return;
+
+    const guildData = await message.client.persistence.get(
+      String(message.guild.id),
+    );
+
+    if (
+      guildData?.calling != true &&
+      !message.content.startsWith(config.prefix)
+    )
+      return;
+    else if (
+      guildData?.calling === true &&
+      !message.content.startsWith(config.prefix)
+    ) {
+      // respond 1/3 of the time with a random attachment
+      if (Math.random() > 0.33) return;
+
+      // get a random attachment
+      const attachments = [
+        "./src/assets/hohoho.ogg",
+        "./src/assets/no.ogg",
+        "./src/assets/yes.ogg",
+      ];
+
+      const attachment = new AttachmentBuilder(
+        attachments[Math.floor(Math.random() * attachments.length)], // path file
+        {
+          name: "voice-message.ogg",
+          duration: 0,
+          waveform:
+            "acU6Va9UcSVZzsVw7IU/80s0Kh/pbrTcwmpR9da4mvQejIMykkgo9F2FfeCd235K/atHZtSAmxKeTUgKxAdNVO8PAoZq1cHNQXT/PHthL2sfPZGSdxNgLH0AuJwVeI7QZJ02ke40+HkUcBoDdqGDZeUvPqoIRbE23Kr+sexYYe4dVq+zyCe3ci/6zkMWbVBpCjq8D8ZZEFo/lmPJTkgjwqnqHuf6XT4mJyLNphQjvFH9aRqIZpPoQz1sGwAY2vssQ5mTy5J5muGo+n82b0xFROZwsJpumDsFi4Da/85uWS/YzjY5BdxGac8rgUqm9IKh7E6GHzOGOy0LQIz3O4ntTg==",
+        },
+      );
+
+      await message.reply({ files: [attachment], flags: 8192 });
+
+      return;
+    }
+
     if (!message.content.startsWith(config.prefix)) return;
 
     const args = message.content.slice(config.prefix.length).trim().split(/ +/);
@@ -31,7 +71,7 @@ module.exports = {
     const cmd =
       message.client.legacyCmds.get(cmdName) ||
       message.client.legacyCmds.find(
-        (c) => c.alias && c.alias.includes(cmdName)
+        (c) => c.alias && c.alias.includes(cmdName),
       );
 
     if (!cmd) return;
@@ -41,10 +81,10 @@ module.exports = {
       if (!authorPerms || !authorPerms.has(cmd.permissions)) {
         print.debug(
           message.author.username +
-            ` <${message.author.id}> attempted to run ${config.prefix}${cmd.name} but did not have the necessary permissions.`
+            ` <${message.author.id}> attempted to run ${config.prefix}${cmd.name} but did not have the necessary permissions.`,
         );
         return message.reply(
-          "You don't have the permission to run this command!"
+          "You don't have the permission to run this command!",
         );
       }
     }
@@ -52,60 +92,28 @@ module.exports = {
     if (cmd.args && !args.length) {
       print.debug(
         message.author.username +
-          ` <${message.author.id}> attempted to run ${config.prefix}${cmd.name} but did not enter any arguments.`
+          ` <${message.author.id}> attempted to run ${config.prefix}${cmd.name} but did not enter any arguments.`,
       );
 
       return message.reply(`You didn't provide any arguments!`);
     }
 
-    const { legacyCooldowns } = message.client;
-
-    if (!legacyCooldowns.has(cmd.name)) {
-      legacyCooldowns.set(cmd.name, new Collection());
-    }
-
-    // Get current time
-    const now = Date.now();
-
-    // Get cooldown
-    const timestamps = legacyCooldowns.get(cmd.name);
-    const cooldown = cmd.cooldown * 1000;
-
-    // If user has a cooldown
-    if (timestamps.has(message.author.id)) {
-      const expirationTime = timestamps.get(message.author.id) + cooldown;
-
-      if (now < expirationTime) {
-        const expiredTimestamp = Math.round(expirationTime / 1000);
-        print.debug(
-          message.author.username +
-            ` <${message.author.id}> attempted to run ${config.prefix}${cmd.name} but was on a ${cmd.cooldown} second cooldown.`
-        );
-        return message.reply(
-          `You're sending commands too fast! You can try again <t:${expiredTimestamp}:R>.`
-        );
-      }
-    }
-
-    timestamps.set(message.author.id, now);
-    setTimeout(() => timestamps.delete(message.author.id), cooldown);
-
     try {
       // Try to execute the command
-      await cmd.execute(client, message, args);
+      await cmd.execute(message.client, message, args);
       print.debug(
         message.author.username +
-          ` <${message.author.id}> ran ${config.prefix}${cmd.name}.`
+          ` <${message.author.id}> ran ${config.prefix}${cmd.name}.`,
       );
     } catch (err) {
       // If the execution fails, log to console and return an error message
       print.error(
         message.author.username +
           ` <${message.author.id}> attempted to run ${config.prefix}${cmd.name} encountered an error.\n` +
-          err
+          err,
       );
       message.reply(
-        "Sorry! I've encountered an error processing your command, something inside me must've went wrong. Please try again later!"
+        "Sorry! I've encountered an error processing your command, something inside me must've went wrong. Please try again later!",
       );
       return;
     }

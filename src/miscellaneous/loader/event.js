@@ -14,7 +14,7 @@ const print = require("../../helpers/print");
 module.exports = async (client) => {
   // Define the path for commands folder and filter only .js files
   const evnFile = readdirSync("./src/events/").filter((file) =>
-    file.endsWith(".js")
+    file.endsWith(".js"),
   );
 
   // Create arrays for event counting
@@ -39,6 +39,6 @@ module.exports = async (client) => {
   }
 
   print.log(
-    `Successfully loaded ${evnOnce} \`once\` and ${evnOn} \`on\` events.`
+    `Successfully loaded ${evnOnce} \`once\` and ${evnOn} \`on\` events.`,
   );
 };

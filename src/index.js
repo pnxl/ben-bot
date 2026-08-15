@@ -7,11 +7,15 @@
  */
 
 // Import the required modules and load from .env file
+const { Keyv } = require("keyv");
 const { Client, GatewayIntentBits, Collection } = require("discord.js");
 require("dotenv").config();
 
 // Clear the console when started
 console.clear();
+
+// Create a new Keyv instance for persisting data
+const persistence = new Keyv("sqlite://./src/persistence.sqlite");
 
 // Create a new client and a collection for the commands
 const client = new Client({
@@ -22,17 +26,16 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
   ],
 });
-client.slashCmds = new Collection();
 client.legacyCmds = new Collection();
 
-// Create a new collection to store cooldowns for commands
-client.slashCooldowns = new Collection();
-client.legacyCooldowns = new Collection();
+// Attach the persistence instance to the client for global access
+client.persistence = persistence;
 
 // Call the command and event loader
-require("./miscellaneous/loader/slashCmd")(client);
 require("./miscellaneous/loader/legacyCmd")(client);
 require("./miscellaneous/loader/event")(client);
+
+persistence.on("error", (err) => console.error("Keyv connection error:", err));
 
 // Finally, login to the Discord API
 client.login(process.env.BOT_TOKEN);
