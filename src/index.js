@@ -26,13 +26,13 @@ const client = new Client({
     GatewayIntentBits.GuildMembers,
   ],
 });
-client.legacyCmds = new Collection();
+client.cmds = new Collection();
 
 // Attach the persistence instance to the client for global access
 client.persistence = persistence;
 
 // Call the command and event loader
-require("./miscellaneous/loader/legacyCmd")(client);
+require("./miscellaneous/loader/command")(client);
 require("./miscellaneous/loader/event")(client);
 
 persistence.on("error", (err) => console.error("Keyv connection error:", err));

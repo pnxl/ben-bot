@@ -69,10 +69,8 @@ module.exports = {
     const cmdName = args[0].toLowerCase();
 
     const cmd =
-      message.client.legacyCmds.get(cmdName) ||
-      message.client.legacyCmds.find(
-        (c) => c.alias && c.alias.includes(cmdName),
-      );
+      message.client.cmds.get(cmdName) ||
+      message.client.cmds.find((c) => c.alias && c.alias.includes(cmdName));
 
     if (!cmd) return;
 

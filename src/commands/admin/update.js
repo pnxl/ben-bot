@@ -9,8 +9,8 @@
 const si = require("systeminformation");
 const { execSync } = require("child_process");
 const { ActionRowBuilder, ButtonStyle, ButtonBuilder } = require("discord.js");
-const print = require("../../../helpers/print");
-const config = require("../../../../config.json");
+const print = require("../../helpers/print");
+const config = require("../../../config.json");
 
 // Export the command data for loader
 module.exports = {
@@ -35,7 +35,7 @@ module.exports = {
     // Check if process is ran with PM2
     if (!process.env.PM2_HOME) {
       return message.reply(
-        "I couldn't update because my process wasn't ran with `pm2`. Try terminating and then starting me with `npm run start`."
+        "I couldn't update because my process wasn't ran with `pm2`. Try terminating and then starting me with `npm run start`.",
       );
     }
 
@@ -44,21 +44,21 @@ module.exports = {
     execSync("git fetch", (error, stderr) => {
       if (error) {
         print.error(
-          `An error occured when trying to fetch the latest commit. \`\`\`${error.message}\`\`\``
+          `An error occured when trying to fetch the latest commit. \`\`\`${error.message}\`\`\``,
         );
         return response
           .edit(
-            `An error occured when trying to fetch the latest commit. \`\`\`${error.message}\`\`\``
+            `An error occured when trying to fetch the latest commit. \`\`\`${error.message}\`\`\``,
           )
           .catch(print.error);
       }
       if (stderr) {
         print.error(
-          `An error occured when trying to fetch the latest commit. \`\`\`${stderr}\`\`\``
+          `An error occured when trying to fetch the latest commit. \`\`\`${stderr}\`\`\``,
         );
         return response
           .edit(
-            `An error occured when trying to fetch the latest commit. \`\`\`${error.message}\`\`\``
+            `An error occured when trying to fetch the latest commit. \`\`\`${error.message}\`\`\``,
           )
           .catch(print.error);
       }
@@ -75,7 +75,7 @@ module.exports = {
     if (commitLocal == commitRemote) {
       return response
         .edit(
-          `There are no updates! ${config.name} is running on the latest version. (commit \`${commitLocal}\`)`
+          `There are no updates! ${config.name} is running on the latest version. (commit \`${commitLocal}\`)`,
         )
         .catch(print.error);
     }
@@ -118,12 +118,12 @@ module.exports = {
       if (answer.customId === "confirm") {
         confirmation.delete();
         const reply = await message.channel.send(
-          "Alright! Fetching the latest update..."
+          "Alright! Fetching the latest update...",
         );
         const pull = execSync("git pull").toString();
         reply.delete();
         await message.channel.send(
-          `${pull.slice(0, 24)}\n\`\`\`diff\n${pull.slice(25)}\n\`\`\``
+          `${pull.slice(0, 24)}\n\`\`\`diff\n${pull.slice(25)}\n\`\`\``,
         );
         message.channel.send("Restarting bot...");
         setTimeout(() => process.exit(), 5000);
@@ -134,7 +134,7 @@ module.exports = {
     } catch (e) {
       confirmation.delete();
       message.channel.send(
-        "A confirmation wasn't received in five minutes, cancelling."
+        "A confirmation wasn't received in five minutes, cancelling.",
       );
     }
   },
