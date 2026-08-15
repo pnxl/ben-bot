@@ -38,8 +38,8 @@ module.exports = {
       guildData?.calling === true &&
       !message.content.startsWith(config.prefix)
     ) {
-      // respond 1/3 of the time with a random attachment
-      if (Math.random() > 0.33) return;
+      // respond 2/3 of the time with a random attachment
+      if (Math.random() > 0.66) return;
 
       // get a random attachment
       const attachments = [
