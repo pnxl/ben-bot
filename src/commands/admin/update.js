@@ -30,6 +30,12 @@ module.exports = {
 
   // Execute the command asynchronously
   async execute(client, message, args) {
+    if (message.author.id !== config.ownerId)
+      return print.info(
+        message.author.username +
+          ` <${message.author.id}> attempted to evaluate code but did not have the necessary permissions.`,
+      );
+
     await message.channel.sendTyping();
 
     // Check if process is ran with PM2
