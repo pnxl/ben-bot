@@ -1,14 +1,12 @@
-# Discord.js Bot Template
+# ben-bot
 
-[![](https://img.shields.io/npm/v/discord.js?label=discord.js)](https://github.com/discordjs)
-
-> Simple Discord.js bot template to help me kickstart my Discord.js projects!
+talking ben in discord
 
 ## Features
-- Supports both slash and legacy commands!
-- Very cool console logging (with toggleable debug on config)
-- Update command that lets you pull from your Git repo (all from Discord)
-- Statistics command to check up on your host machine
+- call ben ($call)
+- talk to ben (send any message)
+- hang up ben ($hangup)
+- update the bot ($update)
 
 ## License
 
